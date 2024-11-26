@@ -6,6 +6,8 @@ use App\Models\Course;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Registration;
+use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
@@ -21,9 +23,10 @@ class CourseController extends Controller
     public function index()
     {
         Gate::authorize('all_courses');
-        $courses = Course::with('teacher')->orderByDesc('id')->paginate(5);
+        $user = Auth::user();
+        $courses = Course::with('teacher')->withCount('students')->orderByDesc('id')->paginate(5);
         $teacher = Teacher::all();
-        return view('admin.courses.index',compact('courses','teacher'));
+        return view('admin.courses.index', compact('courses', 'teacher'));
     }
 
     /**
@@ -35,7 +38,7 @@ class CourseController extends Controller
     {
         $teachers = Teacher::all();
         $courses = Course::all();
-        return view('admin.courses.create', compact('courses','teachers'));
+        return view('admin.courses.create', compact('courses', 'teachers'));
     }
 
     /**
@@ -52,8 +55,8 @@ class CourseController extends Controller
             'description' => 'required',
             'btn_text' => 'required',
             'btn_link' => 'required',
-           // 'registration_id' => 'required',
-            'teacher_id'=> 'required',
+            // 'registration_id' => 'required',
+            'teacher_id' => 'required',
         ]);
 
         $img = $request->file('image');
@@ -61,19 +64,17 @@ class CourseController extends Controller
         $img->move(public_path('uploads/courses'), $img_name);
 
         Course::create([
-           'image' => $img_name,
+            'image' => $img_name,
             'title' => $request->title,
-           'description' => $request->description,
-           'btn_text' => $request->btn_text,
-           'btn_link' => $request->btn_link,
-          // 'registration_id' => $request->registration_id,
-           'teacher_id' => $request->teacher_id,
+            'description' => $request->description,
+            'btn_text' => $request->btn_text,
+            'btn_link' => $request->btn_link,
+            // 'registration_id' => $request->registration_id,
+            'teacher_id' => $request->teacher_id,
 
         ]);
 
         return redirect()->route('admin.courses.index')->with('msg', 'Course created successfully')->with('type', 'success');
-
-
     }
 
     /**
@@ -98,7 +99,7 @@ class CourseController extends Controller
         $teachers = Teacher::all();
         $courses = Course::all();
         $course = Course::findOrFail($id);
-        return view('admin.courses.edit', compact('courses', 'course','teachers'));
+        return view('admin.courses.edit', compact('courses', 'course', 'teachers'));
     }
 
     /**
@@ -115,32 +116,32 @@ class CourseController extends Controller
             'description' => 'required',
             'btn_text' => 'required',
             'btn_link' => 'required',
-          //  'registration_id' => 'required',
-            'teacher_id'=> 'required',
+            //  'registration_id' => 'required',
+            'teacher_id' => 'required',
         ]);
 
         $courses = Course::findOrFail($id);
 
         $img_name = $courses->image;
-        if($request->hasFile('image')) {
-           $img_name = rand() . time() . $request->file('image')->getClientOriginalName();
-          $request->file('image')->move(public_path('uploads/courses'), $img_name);
-       }
+        if ($request->hasFile('image')) {
+            $img_name = rand() . time() . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('uploads/courses'), $img_name);
+        }
 
 
-       $courses->update([
-        'image' => $img_name,
+        $courses->update([
+            'image' => $img_name,
             'title' => $request->title,
-           'description' => $request->description,
-           'btn_text' => $request->btn_text,
-           'btn_link' => $request->btn_link,
-          // 'registration_id' => $request->registration_id,
-           'teacher_id' => $request->teacher_id,
+            'description' => $request->description,
+            'btn_text' => $request->btn_text,
+            'btn_link' => $request->btn_link,
+            // 'registration_id' => $request->registration_id,
+            'teacher_id' => $request->teacher_id,
 
-    ]);
+        ]);
 
-    // Redirect
-    return redirect()->route('admin.courses.index')->with('msg', 'Courses updated successfully')->with('type', 'info');
+        // Redirect
+        return redirect()->route('admin.courses.index')->with('msg', 'Courses updated successfully')->with('type', 'info');
     }
 
     /**
@@ -152,8 +153,61 @@ class CourseController extends Controller
     public function destroy($id)
     {
         $course = Course::findOrFail($id);
-        File::delete(public_path('uploads/courses/'.$course->image));
+        File::delete(public_path('uploads/courses/' . $course->image));
         $course->delete();
         return redirect()->back()->with('msg', 'Course deleted successfully')->with('type', 'danger');
     }
+    public function enroll($course_id)
+    {
+        $user = auth()->user();
+   
+       
+        if (!$user || $user->role->name !== 'Student') {
+        
+            return redirect()->back()->with('error', 'Only students can enroll in courses.');
+        }
+       
+        $course = Course::find($course_id);
+        if (!$course) {
+            return redirect()->back()->with('error', 'Course not found.');
+        }    
+       
+        $alreadyEnrolled = Registration::where('student_id',$user->student?->id)
+                                        ->where('course_id', $course_id)
+                                        ->exists();
+    
+        if ($alreadyEnrolled) {
+            return redirect()->back()->with('error', 'You are already enrolled in this course.');
+        }
+
+        $teacherId = $course->teacher_id;
+    
+        Registration::create([
+            'student_id' => $user->student?->id,
+            'course_id' => $course_id,
+            'teacher_id' => $teacherId,
+        ]);
+    
+        return redirect()->back()->with('success', 'You have successfully enrolled in the course!');
+    }
+    public function removeEnrollment($courseId)
+    {
+        $student = auth()->user()->student;
+    
+        if (!$student) {
+            return redirect()->route('admin.home')->with('error', 'Student profile not found.');
+        }
+    
+        if ($student->courses()->where('courses.id', $courseId)->exists()) {
+            $student->courses()->detach($courseId);
+    
+            return redirect()->route('admin.index')->with('success', 'You have successfully removed the course.');
+        }
+    
+        return redirect()->route('admin.index')->with('error', 'You are not enrolled in this course.');
+    }
+    
+
+    
+
 }

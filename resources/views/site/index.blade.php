@@ -103,10 +103,10 @@
     <div class="row">
       <div class="col-12">
         <div class="d-flex align-items-center section-title justify-content-between">
-          <h2 class="mb-0 text-nowrap mr-3">Our Course</h2>
+          <h2 class="mb-0 text-nowrap mr-3">Our Courses</h2>
           <div class="border-top w-100 border-primary d-none d-sm-block"></div>
           <div>
-            <a href="{{ route('site.course')}}" class="btn btn-sm btn-outline-primary ml-sm-3 d-none d-sm-block">see all</a>
+            <a href="{{ route('site.courses')}}" class="btn btn-sm btn-outline-primary ml-sm-3 d-none d-sm-block">see all</a>
           </div>
         </div>
       </div>
@@ -114,10 +114,11 @@
     <!-- course list -->
 <div class="row justify-content-center">
   <!-- course item -->
-  @foreach ( $courses as $item )
-  <div class="col-lg-4 col-sm-6 mb-5">
-   @include('includes.course')
-   @endforeach
+  
+  @include('includes.course')
+  
+</div>
+
   <!-- course item -->
 
   <!-- course item -->

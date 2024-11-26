@@ -70,10 +70,30 @@
         </div>
         <div class="col-lg-8 text-center text-lg-right">
           <ul class="list-inline">
-            <li class="list-inline-item"><a class="text-uppercase text-color p-sm-2 py-2 px-0 d-inline-block" href="{{ route('login')}}" data-toggle="modal" data-target="#loginModal">login</a></li>
-            <li class="list-inline-item"><a class="text-uppercase text-color p-sm-2 py-2 px-0 d-inline-block" href="{{ route('register')}}" data-toggle="modal" data-target="#signupModal">register</a></li>
+              @if (auth()->check())
+                  <!-- User is logged in, show "Welcome, [Username]" and a logout option -->
+                  <li class="list-inline-item">
+                      <span class="text-uppercase text-color p-sm-2 py-2 px-0 d-inline-block">Hi, {{ auth()->user()->name }}</span>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-uppercase text-color p-sm-2 py-2 px-0 d-inline-block" href="{{ route('admin.index') }}">Admin Panel</a>
+                </li>
+                  <li class="list-inline-item">
+                      <a class="text-uppercase text-color p-sm-2 py-2 px-0 d-inline-block" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                  </li>
+                 
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
+              @else
+                  <!-- User is not logged in, show login/register buttons -->
+                  <li class="list-inline-item"><a class="text-uppercase text-color p-sm-2 py-2 px-0 d-inline-block" href="{{ route('login')}}" data-target="#loginModal">Login</a></li>
+                  <li class="list-inline-item"><a class="text-uppercase text-color p-sm-2 py-2 px-0 d-inline-block" href="{{ route('register')}}" data-target="#signupModal">Register</a></li>
+              @endif
           </ul>
-        </div>
+      </div>
+      
+      
       </div>
     </div>
   </div>
@@ -89,33 +109,34 @@
 
         <div class="collapse navbar-collapse" id="navigation">
           <ul class="navbar-nav ml-auto text-center">
-            <li class="nav-item active">
-              <a class="nav-link" href="{{route('site.index')}}">Home</a>
-            </li>
-            <li class="nav-item @@about">
-              <a class="nav-link" href="{{ route('site.about')}}">About</a>
-            </li>
-            <li class="nav-item @@courses">
-              <a class="nav-link" href="{{ route('site.course')}}">COURSES</a>
-            </li>
-            <li class="nav-item @@events">
-              <a class="nav-link" href="{{ route('site.event')}}">EVENTS</a>
-            </li>
-
-            <li class="nav-item dropdown view">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Pages
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="{{ route('site.teacher')}}">Teacher</a></li>
-
-              </ul>
-            </li>
-            <li class="nav-item @@contact">
-              <a class="nav-link" href="{{ route('contact')}}">CONTACT</a>
-            </li>
+              <li class="nav-item {{ Route::is('site.index') ? 'active' : '' }}">
+                  <a class="nav-link" href="{{ route('site.index') }}">Home</a>
+              </li>
+              <li class="nav-item {{ Route::is('site.about') ? 'active' : '' }}">
+                  <a class="nav-link" href="{{ route('site.about') }}">About</a>
+              </li>
+              <li class="nav-item {{ Route::is('site.courses') ? 'active' : '' }}">
+                  <a class="nav-link" href="{{ route('site.courses') }}">Courses</a>
+              </li>
+              <li class="nav-item {{ Route::is('site.event') ? 'active' : '' }}">
+                  <a class="nav-link" href="{{ route('site.event') }}">Events</a>
+              </li>
+              <li class="nav-item dropdown view {{ Route::is('site.teachers') ? 'active' : '' }}">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Pages
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li>
+                          <a class="dropdown-item" href="{{ route('site.teachers') }}">Teachers</a>
+                      </li>
+                  </ul>
+              </li>
+              <li class="nav-item {{ Route::is('contact') ? 'active' : '' }}">
+                  <a class="nav-link" href="{{ route('contact') }}">Contact</a>
+              </li>
           </ul>
-        </div>
+      </div>
+      
       </nav>
     </div>
   </div>
@@ -236,7 +257,7 @@
           <h4 class="text-white mb-5">COMPANY</h4>
           <ul class="list-unstyled">
             <li class="mb-3"><a class="text-color" href="{{ route('site.about')}}">About </a></li>
-            <li class="mb-3"><a class="text-color" href="{{ route('site.teacher')}}">Teacher</a></li>
+            <li class="mb-3"><a class="text-color" href="{{ route('site.teachers')}}">Teacher</a></li>
             <li class="mb-3"><a class="text-color" href="{{ route('contact')}}">Contact</a></li>
 
           </ul>
@@ -245,7 +266,7 @@
         <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-5 mb-md-0">
           <h4 class="text-white mb-5">LINKS</h4>
           <ul class="list-unstyled">
-            <li class="mb-3"><a class="text-color" href="{{ route('site.course')}}">Courses</a></li>
+            <li class="mb-3"><a class="text-color" href="{{ route('site.courses')}}">Courses</a></li>
             <li class="mb-3"><a class="text-color" href="{{ route('site.event')}}">Events</a></li>
 
           </ul>

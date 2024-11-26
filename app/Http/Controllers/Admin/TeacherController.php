@@ -11,6 +11,7 @@ use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
 {
@@ -21,10 +22,10 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $users=User::find(1);
+        $users = User::find(1);
         Gate::authorize('all_teachers');
-        $teachers= Teacher::with('category')->orderByDesc('id')->paginate(5);
-        return view('admin.teachers.index', compact('teachers','users'));
+        $teachers = Teacher::with('category')->orderByDesc('id')->paginate(5);
+        return view('admin.teachers.index', compact('teachers', 'users'));
     }
 
     /**
@@ -34,10 +35,10 @@ class TeacherController extends Controller
      */
     public function create()
     {
-        $users=User::find(1);
+        $users = User::find(1);
         $teachers = Teacher::all();
         $categories = Category::all();
-        return view('admin.teachers.create', compact('teachers','categories','users'));
+        return view('admin.teachers.create', compact('teachers', 'categories', 'users'));
     }
 
     /**
@@ -53,24 +54,28 @@ class TeacherController extends Controller
             'name' => 'required',
             'major' => 'required',
             'category_id' => 'nullable',
+            "email" => "required|email|unique:users",
+            "password" => "required|min:8|confirmed",
         ]);
 
         $img = $request->file('image');
-       $img_name = rand() . time() . $img->getClientOriginalName();
-       $img->move(public_path('uploads/teachers'), $img_name);
+        $img_name = rand() . time() . $img->getClientOriginalName();
+        $img->move(public_path('uploads/teachers'), $img_name);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+        Teacher::create([
+            'image' => $img_name,
+            'user_id' => $user->id,
+            'name' => $request->name,
+            'major' => $request->major,
+            'categorie_id' => $request->category_id
 
-       Teacher::create([
-        'image' => $img_name,
-        'name' => $request->name,
-        'major' => $request->major,
-        'categorie_id' => $request->category_id
+        ]);
 
-    ]);
-
-    return redirect()->route('admin.teachers.index')->with('msg', 'Category created successfully')->with('type', 'success');
-
-
-
+        return redirect()->route('admin.teachers.index')->with('msg', 'Category created successfully')->with('type', 'success');
     }
 
     /**
@@ -95,7 +100,7 @@ class TeacherController extends Controller
         $categories = Category::all();
         $teachers = Teacher::all();
         $teacher = Teacher::findOrFail($id);
-        return view('admin.teachers.edit', compact('teachers', 'teacher','categories'));
+        return view('admin.teachers.edit', compact('teachers', 'teacher', 'categories'));
     }
 
     /**
@@ -117,23 +122,20 @@ class TeacherController extends Controller
         $teacher = Teacher::findOrFail($id);
 
         $img_name = $teacher->image;
-        if($request->hasFile('image')) {
-           $img_name = rand() . time() . $request->file('image')->getClientOriginalName();
-          $request->file('image')->move(public_path('uploads/teachers'), $img_name);
-       }
+        if ($request->hasFile('image')) {
+            $img_name = rand() . time() . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('uploads/teachers'), $img_name);
+        }
 
-       $teacher->update([
-        'image' => $img_name,
-        'name' => $request->name,
-        'major' => $request->major,
-        'categorie_id' => $request->category_id
+        $teacher->update([
+            'image' => $img_name,
+            'name' => $request->name,
+            'major' => $request->major,
+            'categorie_id' => $request->category_id
 
-    ]);
+        ]);
 
-    return redirect()->route('admin.teachers.index')->with('msg', 'Teacher updated successfully')->with('type', 'info');
-
-
-
+        return redirect()->route('admin.teachers.index')->with('msg', 'Teacher updated successfully')->with('type', 'info');
     }
 
     /**
@@ -144,14 +146,13 @@ class TeacherController extends Controller
      */
     public function destroy($id)
     {
-        $courses = Course::where('teacher_id',$id)->first();
-        if($courses)
-        {
+        $courses = Course::where('teacher_id', $id)->first();
+        if ($courses) {
             return redirect()->back()->with('msg', 'Teacher Cant Delete Because Find In Courses')->with('type', 'danger');
         }
         $teacher = Teacher::findOrFail($id);
 
-        File::delete(public_path('uploads/teachers/'.$teacher->image));
+        File::delete(public_path('uploads/teachers/' . $teacher->image));
 
         $teacher->delete();
 

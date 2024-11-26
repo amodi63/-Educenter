@@ -8,9 +8,11 @@ return [
     'major' => 'Major',
     'about' => 'About',
     'event' => 'Event',
-    'lates_new' => 'Lates_New',
+    'lates_new' => 'Lates New',
     'student' => 'Student',
     'user' => 'User',
     'registration' => 'Registration',
     'roles' => 'Roles',
+    'public_site' => "Public Site"
+
 ];

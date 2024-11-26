@@ -15,10 +15,11 @@ class CreateTeachersTable extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('categorie_id')->references('id')->on('categories');
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('image');
             $table->string('name');
             $table->string('major');
-            $table->foreignId('categorie_id')->references('id')->on('categories');
             $table->softDeletes();
             $table->timestamps();
         });

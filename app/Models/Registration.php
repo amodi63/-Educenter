@@ -10,19 +10,21 @@ class Registration extends Model
 {
     use HasFactory,softDeletes;
      protected $guarded = [];
+     protected $table = 'registrations';
 
-     public function student()
+     public function students()
     {
-        return $this->hasMany(Student::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function teacher()
     {
-        return $this->hasMany(Teacher::class);
+        return $this->belongsTo(Teacher::class);
     }
 
     public function course()
     {
-        return $this->hasMany(Course::class);
+        return $this->belongsTo(Course::class);
     }
+    
 }

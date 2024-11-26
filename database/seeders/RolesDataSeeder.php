@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Ability;
 use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
+use Illuminate\Support\Facades\DB;
 
 class RolesDataSeeder extends Seeder
 {
@@ -15,8 +15,16 @@ class RolesDataSeeder extends Seeder
      *
      * @return void
      */
-
+    
     protected $ability = [
+        'enroll_courses' => 'Enroll Courses',
+        'all_roles' => 'All Roles',
+
+        'all_users' => 'All Users',
+        'add_user' => 'Add New User',
+        'edit_user' => 'Edit User',
+        'delete_user' => 'Delete User',
+
         'all_categories' => 'All Categories',
         'single_category' => 'Show Single Category',
         'add_category' => 'Add new category',
@@ -52,19 +60,26 @@ class RolesDataSeeder extends Seeder
         'add_news' => 'Add new News',
         'delete_news' => 'Delete News',
         'edit_news' => 'Edit News',
+
     ];
     public function run()  //role
     {
-        $data = [
+        $roles = [
             ['name' => 'Super Admin'],
             ['name' => 'Category Manager'],
             ['name' => 'Course Manager'],
-            ['name' => 'Teacher Manager'],
+            ['name' => 'Teacher'],
+            ['name' => 'Student'],
             ['name' => 'About Manager'],
             ['name' => 'Event Manager'],
             ['name' => 'News Manager'],
+
         ];
-        Role::insert($data);
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Ability::truncate();
+        Role::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Role::insert($roles);
 
         foreach($this->ability as $code => $name) {
             Ability::create([

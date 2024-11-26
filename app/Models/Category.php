@@ -3,6 +3,8 @@
 namespace App\Models;
 
 //use App\Traits\Trans;
+
+use App\Scopes\UserAddedScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\softDeletes;
@@ -14,6 +16,7 @@ class Category extends Model
      //protected $guarded = [];
      protected $fillable = ['name_major', 'image','title','description'];
 
+   
      public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id')->withDefault();
@@ -28,4 +31,5 @@ class Category extends Model
     // {
     //    return $this->belongsTo(Teacher::class);
     // }
+    
 }

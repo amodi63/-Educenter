@@ -13,4 +13,5 @@ return [
     'user' => 'المستخدم',
     'registration' => 'التسجيل',
     'roles' => 'الصلاحيات',
+    'public_site' => "الموقع الخارجي"
 ];

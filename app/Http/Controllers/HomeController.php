@@ -34,10 +34,11 @@ class HomeController extends Controller
         $users = User::first();
         $courses_slider = Course::orderByDesc('id')->take(3)->get();
         $abouts = About::orderByDesc('id')->take(1)->get();
-        $courses = Course::orderByDesc('id')->take(6)->get();
+        $courses = Course::with('teacher')->take(3)->get();
         $events = Event::orderByDesc('id')->take(3)->get();
         $teachers = Teacher::orderByDesc('id')->take(3)->get();
         $news = News::orderByDesc('id')->take(3)->get();
+            
 
 
 

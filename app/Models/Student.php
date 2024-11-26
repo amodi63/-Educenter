@@ -2,29 +2,33 @@
 
 namespace App\Models;
 
+use App\Scopes\UserAddedScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\softDeletes;
 
 class Student extends Model
 {
-    use HasFactory,softDeletes ;
+    use HasFactory, softDeletes;
     protected $guarded = [];
 
-    public function registrations()
+    protected static function booted()
     {
-        return $this->belongsTo(Registrations::class);
+        static::addGlobalScope(new UserAddedScope);
     }
 
-    public function course()
+
+    public function courses()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsToMany(Course::class, 'registrations', 'student_id', 'course_id');
     }
 
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
     }
-
-
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

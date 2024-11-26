@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class RegisterController extends Controller
 {
@@ -52,7 +54,9 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'major' => ['required','string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'no_phone' => ['required', Rule::unique('students','no_phone')]
         ]);
     }
 
@@ -64,10 +68,18 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'role_id' => 5,
             'password' => Hash::make($data['password']),
         ]);
+        Student::create([
+            'name' => $data['name'],
+            'major' =>$data['major'],
+            'no_phone' => $data['no_phone'],
+            'user_id' =>  $user->id      
+        ]);
+        return  $user;
     }
 }

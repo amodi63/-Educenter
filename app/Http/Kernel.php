@@ -2,9 +2,13 @@
 
 namespace App\Http;
 //use App\Http\Middleware\Authenticate;
+
+use App\Http\Middleware\AdminOnlyAccess;
 use App\Http\Middleware\CheckPassord;
 use App\Http\Middleware\CheckUserType;
 use App\Http\Middleware\ChangeLanguage;
+use App\Http\Middleware\CheckAdminToken;
+use App\Http\Middleware\checkType;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -24,6 +28,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        
     ];
 
     /**
@@ -79,5 +84,7 @@ class Kernel extends HttpKernel
         'CheckPassord' => CheckPassord::class,
         'ChangeLanguage' => ChangeLanguage::class,
         'CheckAdminToken'=> CheckAdminToken::class,
+        "checkUserType" => checkUserType::class,
+        'ability' => \App\Http\Middleware\CheckAbility::class,
     ];
 }

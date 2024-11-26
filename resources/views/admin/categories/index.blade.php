@@ -43,12 +43,17 @@
             {{-- <td>{{ $category->teacher}}</td> --}}
             {{--<td>{{ $category->created_at ? $category->created_at->diffForHumans() : '' }}</td>--}}
             <td>
+                @if(Auth::user()->hasAbility('edit_category'))
+
                 <a class="btn btn-sm btn-primary" href="{{ route('admin.categories.edit', $category->id) }}"><i class="fas fa-edit"></i></a>
+                @endif
+                @if(Auth::user()->hasAbility('delete_category'))
                 <form class="d-inline" action="{{ route('admin.categories.destroy', $category->id) }}" method="POST">
                     @csrf
                     @method('delete')
                     <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure')"><i class="fas fa-trash"></i></button>
                 </form>
+                @endif
             </td>
         </tr>
         @endforeach

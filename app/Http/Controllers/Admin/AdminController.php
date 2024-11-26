@@ -11,6 +11,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
+use App\Models\Registration;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
@@ -22,10 +23,23 @@ class AdminController extends Controller
         $e_count = Event::count();
         $m_count = Major::count();
         $t_count = Teacher::count();
-        $users=User::find(1);
+        $u_count = User::count();
+        $user = Auth::user();
+        $enrolledCourses = collect();
+        $teachingCourses = collect();
+        if ($user->role->name == 'Student') {
+            $enrolledCourses = Registration::where('student_id', $user->student?->id)
+            ->with('course')
+            ->get()
+            ->pluck('course');
+        }
+ 
+        if ($user->role->name == 'Teacher') {
+            $teacher = $user->teacher;
+            $teachingCourses = Course::where('teacher_id', $user->teacher->id)->get();
+        }
 
-        // $m_earning = Payment::whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->sum('total');
-        // $y_earning = Payment::whereYear('created_at', date('Y'))->sum('total');
-        return view('admin.index', compact('users','c_count','co_count','e_count','m_count','t_count'));
+       
+        return view('admin.index', compact('u_count','c_count', 'co_count', 'e_count', 'm_count', 't_count', 'enrolledCourses', 'teachingCourses','user'));
     }
 }

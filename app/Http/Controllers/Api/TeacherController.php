@@ -10,7 +10,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 //use App\Http\Controllers\Api\TeacherResponse;
 use App\Http\Controllers\TeacherResource;
-
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
 {
@@ -33,18 +34,43 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $v = Validator::make($request->all(),["name"=>"required|unique:teachers"]);
+{
 
-        if($v->failse()){
-             return response()->json(["error"=>true,
-             "errors"=>$v->errors()],
-              422);
-        }
-           $teacher = new Teacher(["name"=>$request->name]);
-           $teacher->save();
-           return new TeacherResource($teacher);
+    // Validate the input
+    $v = Validator::make($request->all(), [
+        "name" => "required|unique:teachers",
+        "email" => "required|email|unique:users",
+        'categorie_id' =>"required|email|in:categories,id",
+        "password" => "required|min:8|confirmed",
+        'major' =>'required|string',
+    ]);
+
+    // If validation fails
+    if ($v->fails()) {
+        return response()->json([
+            "error" => true,
+            "errors" => $v->errors()
+        ], 422);
     }
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+    ]);
+    $teacher = Teacher::create([
+        'name' => $request->name,
+        'user_id' => $user->id,
+        'category_id' => $request->category_id
+    ]);
+
+
+
+    return response()->json([
+        'message' => 'Teacher created successfully!',
+        'teacher' => $teacher
+    ], 201);
+}
 
     /**
      * Display the specified resource.

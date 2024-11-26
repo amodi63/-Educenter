@@ -39,13 +39,14 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Auth::routes();
 
-Route::group(['middleware' => ['auth']], function(){
 Route::get('/',[SiteController::class, 'index'])->name('site.index');
-
+Route::group(['middleware' => ['auth']], function(){
  Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
  Route::get('/about',[SiteController::class, 'about'])->name('site.about');
-Route::get('/course',[SiteController::class, 'course'])->name('site.course');
-Route::get('/teacher',[SiteController::class, 'teacher'])->name('site.teacher');
+Route::get('/courses',[SiteController::class, 'courses'])->name('site.courses');
+Route::post('/courses/{courseId}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+Route::delete('/courses/{course}/remove-enrollment', [CourseController::class, 'removeEnrollment'])->name('courses.removeEnrollment');
+Route::get('/teachers',[SiteController::class, 'teachers'])->name('site.teachers');
 Route::get('/event',[SiteController::class, 'event'])->name('site.event');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'contact_data'])->name('contact_data');
@@ -54,17 +55,21 @@ Route::post('/contact', [SiteController::class, 'contact_data'])->name('contact_
 
 
 Route::prefix(LaravelLocalization::setLocale())->group(function(){
-    Route::prefix('admin')->name('admin.')->middleware('auth','check_user')->group(function() {
+    Route::prefix('admin')->name('admin.')->middleware('auth')->group(function() {
         Route::get('/', [AdminController::class, 'index'])->name('index');
-        Route::resource('categories', CategoryController::class);
-        Route::resource('courses', CourseController::class);
-        Route::resource('teachers',  TeacherController::class);
-        Route::resource('abouts',  AboutController::class);
-        Route::resource('events', EventController::class);
-        Route::resource('news',  NewController::class);
-        Route::get('users', [UserController::class, 'index'])->name('users.index');
-        Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-        Route::resource('roles', RoleController::class);
+        Route::resource('categories', CategoryController::class)->middleware('ability:all_categories');
+        Route::resource('courses', CourseController::class)->middleware('ability:all_courses');
+        Route::resource('teachers',  TeacherController::class)->middleware('ability:all_teachers');
+        Route::resource('abouts',  AboutController::class)->middleware('ability:all_abouts');
+        Route::resource('events', EventController::class)->middleware('ability:all_events');
+        Route::resource('news',  NewController::class)->middleware('ability:all_newss');
+        Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('ability:all_users');
+        Route::get('users/create', [UserController::class, 'create'])->name('users.create')->middleware('ability:add_user');
+        Route::post('users/store', [UserController::class, 'store'])->name('users.store')->middleware('ability:add_user');
+        Route::put('users/{user}', [UserController::class, 'update'])->name('users.update')->middleware('ability:edit_user');
+        Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('ability:delete_user');
+    
+        Route::resource('roles', RoleController::class)->middleware('ability:all_users');
 
     });
 
