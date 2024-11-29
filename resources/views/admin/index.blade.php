@@ -1,5 +1,6 @@
 @extends('admin.master')
 
+
 @section('title', 'Dashboard | ' . config('app.name'))
 
 @section('content')
@@ -54,7 +55,7 @@
 
 
 
-            @if (Auth::user()->hasAbility('all_categories'))
+            @if ($user->hasAbility('all_categories'))
                 <div class="col-xl-3 col-md-6 mb-4">
                     <a href="{{ route('admin.categories.index') }}" class="text-decoration-none">
                         <div class="card border-left-info shadow h-100 py-2">
@@ -79,7 +80,7 @@
                 </div>
             @endif
 
-            @if (Auth::user()->hasAbility('all_teachers'))
+            @if ($user->hasAbility('all_teachers'))
                 <div class="col-xl-3 col-md-6 mb-4">
                     <a href="{{ route('admin.teachers.index') }}" class="text-decoration-none">
                         <div class="card border-left-warning shadow h-100 py-2">
@@ -99,8 +100,28 @@
                     </a>
                 </div>
             @endif
+            @if ($user->hasAbility('all_students'))
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <a href="#" class="text-decoration-none">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Students
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $s_count }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endif
 
-            @if (Auth::user()->hasAbility('all_courses'))
+            @if ($user->hasAbility('all_courses'))
                 <div class="col-xl-3 col-md-6 mb-4">
                     <a href="{{ route('admin.courses.index') }}" class="text-decoration-none">
                         <div class="card border-left-warning shadow h-100 py-2">
@@ -120,7 +141,7 @@
                 </div>
             @endif
 
-            @if (Auth::user()->hasAbility('all_events'))
+            @if ($user->hasAbility('all_events'))
                 <div class="col-xl-3 col-md-6 mb-4">
                     <a href="{{ route('admin.events.index') }}" class="text-decoration-none">
                         <div class="card border-left-warning shadow h-100 py-2">
@@ -172,7 +193,7 @@
                 </div>
             </div>
         </div>
-    @elseif (auth()->user()->role->name == 'Student')
+    @elseif ($user->hasRole(Role::ROLE_STUDENT) || $user->hasAbility('enroll_courses'))
         <div class="alert alert-info text-center mb-5">
             You are not enrolled in any courses.
         </div>
@@ -218,7 +239,7 @@
                 </div>
             </div>
         </div>
-    @elseif(auth()->user()->role->name == 'Teacher')
+    @elseif($user->role_id == Role::ROLE_TEACHER)
         <div class="alert alert-info text-center mb-5">
             You are not teaching any courses.
         </div>

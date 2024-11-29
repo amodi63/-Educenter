@@ -23,7 +23,7 @@ class UsersTableSeeder extends Seeder
         $roles = Role::all();
 
         foreach ($roles as $role) {
-            if($role->name == 'Student'){
+            if($role->id == Role::ROLE_STUDENT){
                 continue;
             }
             User::create([

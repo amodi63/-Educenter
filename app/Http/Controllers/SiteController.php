@@ -41,6 +41,7 @@ class SiteController extends Controller
     {
 
         $courses = Course::withCount('students')->with('teacher')->orderByDesc('id')->paginate();
+       
 
         return view('site.course', compact('courses'));
     }
@@ -81,7 +82,9 @@ class SiteController extends Controller
         if (!auth()->check()) {
             return false; 
         }
-        return \App\Models\Registration::where('student_id', auth()->user()->student?->id)
+        $auth_user = auth()->user();  
+        $student = $auth_user->student ?? $auth_user;
+        return \App\Models\Registration::where('student_id', $student->id)
             ->where('course_id', $courseId)
             ->exists();
     }

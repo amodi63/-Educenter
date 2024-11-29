@@ -24,7 +24,7 @@
             <!-- Display teacher's name -->
             <p class="text-muted">Instructor: {{ $item->teacher->name ?? 'N/A' }}</p>
             
-            @if (auth()->check() && auth()->user()->role->name == 'Student')
+            @if (auth()->check() && ( auth()->user()->hasRole(Role::ROLE_STUDENT) || auth()->user()->hasAbility('enroll_courses')))
                 @if ($item->is_enrolled)
                     <button class="btn btn-secondary btn-sm">Enrolled</button>
                 @else

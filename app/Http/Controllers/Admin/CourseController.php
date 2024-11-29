@@ -7,6 +7,7 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Registration;
+use App\Models\Role;
 use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -25,6 +26,7 @@ class CourseController extends Controller
         Gate::authorize('all_courses');
         $user = Auth::user();
         $courses = Course::with('teacher')->withCount('students')->orderByDesc('id')->paginate(5);
+    
         $teacher = Teacher::all();
         return view('admin.courses.index', compact('courses', 'teacher'));
     }
@@ -160,30 +162,30 @@ class CourseController extends Controller
     public function enroll($course_id)
     {
         $user = auth()->user();
-   
-       
-        if (!$user || $user->role->name !== 'Student') {
         
+        if (!$user || (!$user->hasRole(Role::ROLE_STUDENT) && !$user->hasAbility('enroll_courses'))) {
+         
             return redirect()->back()->with('error', 'Only students can enroll in courses.');
         }
+        
        
         $course = Course::find($course_id);
         if (!$course) {
             return redirect()->back()->with('error', 'Course not found.');
         }    
-       
-        $alreadyEnrolled = Registration::where('student_id',$user->student?->id)
+        $student_id = $user->student?->id ?? $user->id;
+        $alreadyEnrolled = Registration::where('student_id',$student_id)
                                         ->where('course_id', $course_id)
                                         ->exists();
     
         if ($alreadyEnrolled) {
+           
             return redirect()->back()->with('error', 'You are already enrolled in this course.');
         }
-
         $teacherId = $course->teacher_id;
     
         Registration::create([
-            'student_id' => $user->student?->id,
+            'student_id' => $user->student?->id ?? $user->id,
             'course_id' => $course_id,
             'teacher_id' => $teacherId,
         ]);
@@ -192,10 +194,11 @@ class CourseController extends Controller
     }
     public function removeEnrollment($courseId)
     {
-        $student = auth()->user()->student;
+        $auth_user = auth()->user();
+        $student = $auth_user->student ?? $auth_user;
     
         if (!$student) {
-            return redirect()->route('admin.home')->with('error', 'Student profile not found.');
+            return redirect()->route('admin.index')->with('error', 'Student profile not found.');
         }
     
         if ($student->courses()->where('courses.id', $courseId)->exists()) {

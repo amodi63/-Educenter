@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use App\Models\Registration;
+use App\Models\Role;
+use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
@@ -24,22 +26,24 @@ class AdminController extends Controller
         $m_count = Major::count();
         $t_count = Teacher::count();
         $u_count = User::count();
+        $s_count  = Student::count();
         $user = Auth::user();
         $enrolledCourses = collect();
         $teachingCourses = collect();
-        if ($user->role->name == 'Student') {
-            $enrolledCourses = Registration::where('student_id', $user->student?->id)
+        $student_id = $user->student->id ?? $user->id ;
+        if ($user->hasRole(Role::ROLE_STUDENT) || $user->hasAbility('enroll_courses')) {
+            $enrolledCourses = Registration::where('student_id', $student_id)
             ->with('course')
             ->get()
             ->pluck('course');
         }
  
-        if ($user->role->name == 'Teacher') {
+        if ($user->hasRole(Role::ROLE_TEACHER)) {
             $teacher = $user->teacher;
             $teachingCourses = Course::where('teacher_id', $user->teacher->id)->get();
         }
 
        
-        return view('admin.index', compact('u_count','c_count', 'co_count', 'e_count', 'm_count', 't_count', 'enrolledCourses', 'teachingCourses','user'));
+        return view('admin.index', compact('s_count','c_count', 'co_count', 'e_count', 'm_count', 't_count', 'enrolledCourses', 'teachingCourses','user'));
     }
 }

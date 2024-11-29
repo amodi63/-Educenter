@@ -42,6 +42,8 @@ class RolesDataSeeder extends Seeder
         'add_teacher' => 'Add new Teacher',
         'delete_teacher' => 'Delete Teacher',
         'edit_teacher' => 'Edit Teacher',
+        
+        'all_students' => 'ALl Students',
 
         'all_abouts' => 'All Abouts',
         'single_about' => 'Show Single About',
