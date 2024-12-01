@@ -27,12 +27,9 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-    
+
         if (Schema::hasTable('abilities')) {
-            $abilities = Cache::rememberForever('abilities', function () {
-                return Ability::all();
-            });
-    
+            $abilities =  Ability::all();
             foreach ($abilities as $ability) {
                 Gate::define($ability->code, function ($user) use ($ability) {
                     return $user->role->abilities()->where('code', $ability->code)->exists();
@@ -40,6 +37,4 @@ class AuthServiceProvider extends ServiceProvider
             }
         }
     }
-    
-    
 }
