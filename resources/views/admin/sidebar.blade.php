@@ -75,7 +75,7 @@
     @endif
 
     <!-- Courses Menu -->
-    @if (Auth::user()->hasAbility('all_courses'))
+    @if (Auth::user()->hasAbility('all_courses')  || Auth::user()->hasAbility('add_course') )
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCourses"
                 aria-expanded="true" aria-controls="collapseCourses">
@@ -84,8 +84,12 @@
             </a>
             <div id="collapseCourses" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
+                    @if (Auth::user()->hasAbility('all_courses'))
                     <a class="collapse-item" href="{{ route('admin.courses.index') }}">All Courses</a>
+                    @endif
+                    @if (Auth::user()->hasAbility('add_course'))
                     <a class="collapse-item" href="{{ route('admin.courses.create') }}">Add New</a>
+                    @endif
                 </div>
             </div>
         </li>

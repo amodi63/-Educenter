@@ -36,6 +36,7 @@ class RolesDataSeeder extends Seeder
         'add_course' => 'Add new course',
         'delete_course' => 'Delete course',
         'edit_course' => 'Edit course',
+        'assign_teacher' => 'Assign Teacher',
 
         'all_teachers' => 'All Teachers',
         'single_teacher' => 'Show Single Teacher',

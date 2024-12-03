@@ -12,10 +12,7 @@ class Student extends Model
     use HasFactory, softDeletes;
     protected $guarded = [];
 
-    protected static function booted()
-    {
-        static::addGlobalScope(new UserAddedScope);
-    }
+    
 
 
     public function courses()

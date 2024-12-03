@@ -9,9 +9,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
+use Throwable;
 
 class TeacherController extends Controller
 {
@@ -20,12 +22,17 @@ class TeacherController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $categories = Category::all();
         $users = User::find(1);
         Gate::authorize('all_teachers');
-        $teachers = Teacher::with('category')->orderByDesc('id')->paginate(5);
-        return view('admin.teachers.index', compact('teachers', 'users'));
+        $teachers = Teacher::with('category')
+            ->searchByCategory($request->input('category_name'))
+            ->orderByDesc('id')
+            ->paginate(5);
+
+        return view('admin.teachers.index', compact('teachers', 'users', 'categories'));
     }
 
     /**
@@ -61,21 +68,29 @@ class TeacherController extends Controller
         $img = $request->file('image');
         $img_name = rand() . time() . $img->getClientOriginalName();
         $img->move(public_path('uploads/teachers'), $img_name);
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        Teacher::create([
-            'image' => $img_name,
-            'user_id' => $user->id,
-            'name' => $request->name,
-            'major' => $request->major,
-            'categorie_id' => $request->category_id
+        try {
+            DB::beginTransaction();
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            Teacher::create([
+                'image' => $img_name,
+                'user_id' => $user->id,
+                'name' => $request->name,
+                'major' => $request->major,
+                'categorie_id' => $request->category_id
 
-        ]);
-
-        return redirect()->route('admin.teachers.index')->with('msg', 'Category created successfully')->with('type', 'success');
+            ]);
+            DB::commit();
+            return redirect()->route('admin.teachers.index')->with('msg', 'Category created successfully')->with('type', 'success');
+        } catch (\Exception $exp) {
+            DB::rollBack();
+            return redirect()->back()->with('msg','Something Error!,Try Agin Later');
+        }
+    
+       
     }
 
     /**

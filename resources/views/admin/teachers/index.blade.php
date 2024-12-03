@@ -11,6 +11,28 @@
         {{ session('msg') }}
     </div>
 @endif
+<form method="GET" action="{{ route('admin.teachers.index') }}">
+    <div class="d-flex justify-content-end mb-3 ">
+        <select name="category_name" class="form-select w-auto" aria-label="Select Category">
+            <option value="">All Categories</option>
+            
+            @foreach($categories as $category)
+                <option value="{{ $category->name_major }}" 
+                    {{ request('category_name') == $category->name_major ? 'selected' : '' }}>
+                    {{ $category->name_major }} 
+                </option>
+            @endforeach
+        </select>
+
+        <button type="submit" class="btn btn-primary ml-2">
+            <i class="fa fa-search"></i> Search
+        </button>
+    </div>
+</form>
+
+
+
+
 
     <table class="table table-bordered">
         <thead>

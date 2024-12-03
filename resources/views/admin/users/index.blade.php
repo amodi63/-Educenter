@@ -83,7 +83,7 @@
                         </div>
                         <div class="form-group">
                             <label for="role_id">Role</label>
-                            <select class="form-control" id="role_id" name="role_id">
+                            <select class="form-select w-auto" id="role_id" name="role_id">
                                 <option value="">Select Role</option>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}">{{ $role->name }}</option>

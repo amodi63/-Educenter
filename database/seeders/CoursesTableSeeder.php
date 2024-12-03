@@ -20,7 +20,6 @@ class CoursesTableSeeder extends Seeder
                 'description' => 'Learn the basics of physics.',
                 'btn_text' => 'Enroll Now',
                 'btn_link' => '/courses/1',
-                'teacher_id' => 1,
             ],
             [
                 'image' => 'painting_course.png',
@@ -28,7 +27,6 @@ class CoursesTableSeeder extends Seeder
                 'description' => 'Learn advanced painting techniques.',
                 'btn_text' => 'Enroll Now',
                 'btn_link' => '/courses/2',
-                'teacher_id' => 2,
             ],
         ]);
     }

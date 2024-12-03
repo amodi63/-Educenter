@@ -82,6 +82,7 @@ class AbilityRoleSeeder extends Seeder
             ['ability_id' => 35, 'role_id' => 8],
             ['ability_id' => 36, 'role_id' => 8],
             ['ability_id' => 37, 'role_id' => 8],
+            ['ability_id' => 38, 'role_id' => 8],
         ];
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('ability_role')->truncate();

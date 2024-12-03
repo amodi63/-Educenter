@@ -60,6 +60,8 @@ Route::prefix(LaravelLocalization::setLocale())->group(function(){
         Route::resource('categories', CategoryController::class)->middleware('ability:all_categories');
         Route::resource('courses', CourseController::class)->middleware('ability:all_courses');
         Route::resource('teachers',  TeacherController::class)->middleware('ability:all_teachers');
+      Route::post('courses/assignTeacher', [CourseController::class, 'assignTeacher'])->name('courses.assignTeacher');
+
         Route::resource('abouts',  AboutController::class)->middleware('ability:all_abouts');
         Route::resource('events', EventController::class)->middleware('ability:all_events');
         Route::resource('news',  NewController::class)->middleware('ability:all_newss');

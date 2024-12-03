@@ -21,7 +21,8 @@ class CreateCoursesTable extends Migration
             $table->string('description');
             $table->string('btn_text');
             $table->string('btn_link');
-            $table->foreignId('teacher_id')->references('id')->on('teachers');
+            $table->foreignId('teacher_id')->nullable()->constrained('teachers')->nullOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

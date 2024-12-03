@@ -57,15 +57,6 @@
 
 
 
-    <div class="mb-3">
-        <label>Teacher</label>
-        <select name="teacher_id" class="form-control">
-            <option value="">Select</option>
-            @foreach ($teachers as $teacher)
-                <option value="{{ $teacher->id }}">{{ $teacher->name}}</option>
-            @endforeach
-        </select>
-    </div>
 
 
     <button class="btn btn-success px-5">Add</button>

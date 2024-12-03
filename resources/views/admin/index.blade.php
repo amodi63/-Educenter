@@ -193,7 +193,7 @@
                 </div>
             </div>
         </div>
-    @elseif ($user->hasRole(Role::ROLE_STUDENT) || $user->hasAbility('enroll_courses'))
+    @elseif ($user->hasRole(Role::ROLE_STUDENT) || ($user->hasAbility('enroll_courses') && !$user->hasRole(Role::ROLE_ADMIN) ))
         <div class="alert alert-info text-center mb-5">
             You are not enrolled in any courses.
         </div>

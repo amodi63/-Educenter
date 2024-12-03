@@ -17,6 +17,6 @@ class UserAddedScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('user_id', auth()->id());
+        $builder->where('created_by', auth()->id());
     }
 }
