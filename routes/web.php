@@ -46,7 +46,7 @@ Route::group(['middleware' => ['auth']], function(){
 Route::get('/courses',[SiteController::class, 'courses'])->name('site.courses');
 Route::post('/courses/{courseId}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
 Route::delete('/courses/{course}/remove-enrollment', [CourseController::class, 'removeEnrollment'])->name('courses.removeEnrollment');
-Route::get('/teachers',[SiteController::class, 'teachers'])->name('site.teachers');
+Route::get('/teachers',[SiteController::class, 'teachers'])->name('site.teachers')->withoutMiddleware('auth');
 Route::get('/event',[SiteController::class, 'event'])->name('site.event');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::post('/contact', [SiteController::class, 'contact_data'])->name('contact_data');

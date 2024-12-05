@@ -14,6 +14,7 @@ class SiteController extends Controller
 {
     public function index()
     {
+        $categories = Category::all();
         $courses_slider = Course::orderByDesc('id')->take(3)->get();
         $abouts = About::orderByDesc('id')->take(1)->get();
         $courses = Course::withCount('students')
@@ -27,7 +28,7 @@ class SiteController extends Controller
         $events = Event::orderByDesc('id')->take(3)->get();
         $teachers = Teacher::orderByDesc('id')->take(3)->get();
         $news = News::orderByDesc('id')->take(3)->get();
-        return view('site.index', compact('courses_slider', 'abouts', 'courses', 'events', 'teachers', 'news'));
+        return view('site.index', compact('courses_slider', 'abouts', 'courses', 'events', 'teachers', 'news', 'categories'));
     }
 
     public function about()
@@ -41,16 +42,25 @@ class SiteController extends Controller
     {
 
         $courses = Course::withCount('students')->with('teacher')->orderByDesc('id')->paginate();
-       
+
 
         return view('site.course', compact('courses'));
     }
 
-    public function teachers()
+    public function teachers(Request $request)
     {
-        $categories = Category::orderByDesc('id')->take(8)->get();
-        $teachers = Teacher::orderByDesc('id')->take(9)->get();
-        return view('site.teacher', compact('categories', 'teachers'));
+        $categories = Category::all();
+        $teachers = Teacher::with('category')
+            ->searchByCategory($request->input('category_name'))
+            ->orderByDesc('id')
+            ->paginate(5);
+        if ($request->ajax()) {
+            return view('includes.teacher', compact('categories', 'teachers'))->render();
+        }
+
+        $categories = Category::all();
+
+        return view('site.index', compact('teachers', 'categories'));
     }
 
     public function event()
@@ -80,9 +90,9 @@ class SiteController extends Controller
     private function isEnrolled($courseId)
     {
         if (!auth()->check()) {
-            return false; 
+            return false;
         }
-        $auth_user = auth()->user();  
+        $auth_user = auth()->user();
         $student = $auth_user->student ?? $auth_user;
         return \App\Models\Registration::where('student_id', $student->id)
             ->where('course_id', $courseId)

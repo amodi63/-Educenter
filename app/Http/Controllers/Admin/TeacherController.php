@@ -24,6 +24,7 @@ class TeacherController extends Controller
      */
     public function index(Request $request)
     {
+ 
         $categories = Category::all();
         $users = User::find(1);
         Gate::authorize('all_teachers');

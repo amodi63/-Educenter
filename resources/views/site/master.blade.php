@@ -22,6 +22,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="author" content="Themefisher">
   <meta name="generator" content="Themefisher Educenter HTML Template v1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- ** Plugins Needed for the Project ** -->
   <!-- Bootstrap -->
@@ -43,6 +44,7 @@
   <!--Favicon-->
   <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
   <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
  @yield('styles')
 </head>
 

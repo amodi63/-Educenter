@@ -73,3 +73,5 @@
     </table>
     {{ $teachers->links() }}
 @stop
+
+

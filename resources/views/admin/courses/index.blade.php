@@ -105,18 +105,10 @@
 
 @section('scripts')
     <script>
-        // Function to set course name, course id, and teacher info in modal
         function assignTeacher(courseName, courseId, currentTeacherId) {
-            // Set course id in the hidden input field
             document.getElementById('course_id').value = courseId;
-
-            // Set course name in the modal title
             document.getElementById('assignTeacherModalLabel').innerText = 'Assign Teacher to ' + courseName;
-
-            // Set teacher id in the select dropdown (if exists)
-            document.getElementById('teacher_id').value = currentTeacherId || '';
-            
-            // Show the modal
+            document.getElementById('teacher_id').value = currentTeacherId || '';            
             var assignTeacherModal = new bootstrap.Modal(document.getElementById('assignTeacherModal'));
             assignTeacherModal.show();
         }

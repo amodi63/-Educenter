@@ -1,6 +1,6 @@
 
 @foreach ($courses as $item)
-<div class="col-lg-4 col-sm-6 mb-5">
+<div class="col-lg-3 col-sm-6 mb-5">
     <div class="card p-0 border-0 shadow-sm rounded-3 hover-shadow">
         <img class="card-img-top rounded-top" src="{{ asset('uploads/courses/' . $item->image) }}"
             alt="{{ $item->title }} thumbnail" style="height: 200px; object-fit: cover;">
