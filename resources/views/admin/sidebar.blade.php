@@ -65,7 +65,7 @@
             </a>
             <div id="collapseTeacher" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="{{ route('admin.teachers.index') }}">All Teacher</a>
+                    <a class="collapse-item" href="{{ route('admin.teachers.index') }}">All Teachers</a>
                     <a class="collapse-item" href="{{ route('admin.teachers.create') }}">Add New</a>
                 </div>
             </div>
